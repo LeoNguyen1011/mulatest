@@ -1,0 +1,1025 @@
+Subject: [PATCH] fix show message Incorrect OTP when enter wron OTP verification code screen
+---
+Index: flutter/mula-biz-frontend/lib/common/widgets/textfields/app_text_field.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_text_field.dart b/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_text_field.dart
+--- a/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_text_field.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_text_field.dart	(date 1698741981854)
+@@ -4,23 +4,25 @@
+ import 'package:mula_biz_mobile/gen/assets.gen.dart';
+ 
+ class AppTextField extends StatelessWidget {
+-  const AppTextField(
+-      {super.key,
+-      this.keyboardType,
+-      this.title,
+-      this.suffixIcon,
+-      this.enabled,
+-      this.obscureText,
+-      this.onChanged,
+-      this.onSubmitted,
+-      this.errorText,
+-      this.hintText,
+-      this.helperText,
+-      this.controller,
+-      this.titleStyle,
+-      this.validator,
+-      this.autovalidateMode,
+-      this.border});
++  const AppTextField({
++    super.key,
++    this.keyboardType,
++    this.title,
++    this.suffixIcon,
++    this.enabled,
++    this.obscureText,
++    this.onChanged,
++    this.onSubmitted,
++    this.errorText,
++    this.hintText,
++    this.helperText,
++    this.controller,
++    this.titleStyle,
++    this.validator,
++    this.autovalidateMode,
++    this.border,
++    this.scrollPadding
++  });
+ 
+   final String? title;
+   final Widget? suffixIcon;
+@@ -38,6 +40,7 @@
+   final String? Function(String?)? validator;
+   final AutovalidateMode? autovalidateMode;
+   final InputBorder? border;
++  final EdgeInsets? scrollPadding;
+ 
+   @override
+   Widget build(BuildContext context) {
+@@ -58,6 +61,7 @@
+           )
+         ],
+         TextFormField(
++          scrollPadding: scrollPadding ?? const EdgeInsets.all(20.0),
+           autovalidateMode:
+               autovalidateMode ?? AutovalidateMode.onUserInteraction,
+           validator: validator,
+Index: flutter/mula-biz-frontend/lib/common/widgets/textfields/app_password_field.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_password_field.dart b/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_password_field.dart
+--- a/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_password_field.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/common/widgets/textfields/app_password_field.dart	(date 1698741919914)
+@@ -20,6 +20,7 @@
+     this.helperText,
+     this.titleStyle,
+     this.validator,
++    this.scrollPadding,
+   });
+ 
+   final void Function(String)? onChanged;
+@@ -30,6 +31,7 @@
+   final String? helperText;
+   final bool enabled;
+   final TextStyle? titleStyle;
++  final EdgeInsets? scrollPadding;
+ 
+   final String? Function(String?)? validator;
+ 
+@@ -59,6 +61,7 @@
+   @override
+   Widget build(BuildContext context) {
+     return AppTextField(
++      scrollPadding: widget.scrollPadding,
+       validator: widget.validator,
+       obscureText: _obscureText,
+       enabled: widget.enabled,
+Index: flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/password_field.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/password_field.dart b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/password_field.dart
+--- a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/password_field.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/password_field.dart	(date 1698741921354)
+@@ -1,6 +1,5 @@
+ import 'package:flutter/material.dart';
+ import 'package:flutter_bloc/flutter_bloc.dart';
+-import 'package:mula_biz_mobile/base/bloc/bloc_status.dart';
+ import 'package:mula_biz_mobile/features/sign_in/presentation/bloc/sign_in_bloc.dart';
+ 
+ import 'package:mula_biz_mobile/common/index.dart';
+@@ -12,6 +11,7 @@
+   Widget build(BuildContext context) {
+     return BlocBuilder<SignInBloc, SignInState>(
+       builder: (context, state) => AppPasswordField(
++        scrollPadding: const EdgeInsets.only(bottom: 100),
+         titleStyle: AppTypo.heading7.copyWith(
+           color: AppColors.grey[700],
+         ),
+Index: flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/sigin_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/sigin_page.dart b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/sigin_page.dart
+--- a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/sigin_page.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/sigin_page.dart	(date 1698741921355)
+@@ -39,7 +39,7 @@
+       },
+       child: BaseScaffold(
+         extendBodyBehindAppBar: true,
+-        resizeToAvoidBottomInset: false,
++        resizeToAvoidBottomInset: true,
+         appBar: const BaseAppBar(
+           hasBack: false,
+         ),
+@@ -48,52 +48,62 @@
+           child: Column(
+             mainAxisSize: MainAxisSize.min,
+             children: [
+-              const SigninHeader(),
+-              SizedBox(
+-                height: 24.h,
+-              ),
+-              const PinNumberField(),
+-              Padding(
+-                padding: EdgeInsets.symmetric(vertical: 24.h),
+-                child: Row(
+-                  crossAxisAlignment: CrossAxisAlignment.center,
+-                  children: [
+-                    Expanded(
+-                      child: Divider(
+-                        endIndent: 0,
+-                        indent: 0,
+-                        color: AppColors.grey[300],
+-                        thickness: 1.h,
+-                        height: 20.h,
+-                      ),
+-                    ),
+-                    Text(
+-                      LocaleKeys.auth_or.tr(),
+-                      style: AppTypo.heading7.copyWith(
+-                        color: AppColors.grey[600],
+-                      ),
+-                    ),
+-                    Expanded(
+-                      child: Divider(
+-                        endIndent: 0,
+-                        indent: 0,
+-                        color: AppColors.grey[300],
+-                        height: 20.h,
+-                        thickness: 1.h,
+-                      ),
+-                    ),
+-                  ],
+-                ),
+-              ),
+-              const PasswordField(),
+-              SizedBox(
+-                height: 16.h,
++              Expanded(
++                child: SingleChildScrollView(
++                  padding: const EdgeInsets.only(bottom: 48),
++                  physics: const BouncingScrollPhysics(),
++                  child: Column(
++                    children: [
++                      const SigninHeader(),
++                      SizedBox(
++                        height: 24.h,
++                      ),
++                      const PinNumberField(),
++                      Padding(
++                        padding: EdgeInsets.symmetric(vertical: 24.h),
++                        child: Row(
++                          crossAxisAlignment: CrossAxisAlignment.center,
++                          children: [
++                            Expanded(
++                              child: Divider(
++                                endIndent: 0,
++                                indent: 0,
++                                color: AppColors.grey[300],
++                                thickness: 1.h,
++                                height: 20.h,
++                              ),
++                            ),
++                            Text(
++                              LocaleKeys.auth_or.tr(),
++                              style: AppTypo.heading7.copyWith(
++                                color: AppColors.grey[600],
++                              ),
++                            ),
++                            Expanded(
++                              child: Divider(
++                                endIndent: 0,
++                                indent: 0,
++                                color: AppColors.grey[300],
++                                height: 20.h,
++                                thickness: 1.h,
++                              ),
++                            ),
++                          ],
++                        ),
++                      ),
++                      const PasswordField(),
++                      SizedBox(
++                        height: 48.h,
++                      ),
++                    ],
++                  ),
++                ),
+               ),
+-              const Spacer(),
+               Container(
+                 alignment: Alignment.bottomCenter,
+                 child: Column(
+                   crossAxisAlignment: CrossAxisAlignment.center,
++                  mainAxisSize: MainAxisSize.min,
+                   children: [
+                     const ResetPinOrPassword(),
+                     SizedBox(
+Index: flutter/mula-biz-frontend/lib/common/widgets/textfields/pin_number_field.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/common/widgets/textfields/pin_number_field.dart b/flutter/mula-biz-frontend/lib/common/widgets/textfields/pin_number_field.dart
+--- a/flutter/mula-biz-frontend/lib/common/widgets/textfields/pin_number_field.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/common/widgets/textfields/pin_number_field.dart	(date 1698741921352)
+@@ -17,6 +17,7 @@
+     this.enabled = true,
+     this.controller,
+     this.focusNode,
++    this.scrollPadding,
+   });
+ 
+   final Function(String)? onChanged;
+@@ -29,6 +30,7 @@
+   final bool enabled;
+   final TextEditingController? controller;
+   final FocusNode? focusNode;
++  final EdgeInsets? scrollPadding;
+ 
+   final PinTheme defaultPinTheme = PinTheme(
+     height: 56.h,
+@@ -63,6 +65,7 @@
+           ),
+         ],
+         Pinput(
++          scrollPadding: scrollPadding ?? const EdgeInsets.all(20),
+           focusNode: focusNode,
+           controller: controller,
+           autofocus: true,
+Index: flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/pin_number_field.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/pin_number_field.dart b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/pin_number_field.dart
+--- a/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/pin_number_field.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/features/sign_in/presentation/pages/_widgets/pin_number_field.dart	(date 1698741921354)
+@@ -36,6 +36,7 @@
+         mainAxisSize: MainAxisSize.min,
+         children: [
+           PINNumberWidget(
++            scrollPadding: const EdgeInsets.only(bottom: 220, top: 50),
+             focusNode: focusNode,
+             controller: controller,
+             enabled: context.read<SignInBloc>().state.status !=
+Index: flutter/mula-biz-frontend/lib/features/account_activation/presentation/pages/account_activation/account_activation_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/flutter/mula-biz-frontend/lib/features/account_activation/presentation/pages/account_activation/account_activation_page.dart b/flutter/mula-biz-frontend/lib/features/account_activation/presentation/pages/account_activation/account_activation_page.dart
+--- a/flutter/mula-biz-frontend/lib/features/account_activation/presentation/pages/account_activation/account_activation_page.dart	(revision 8234ae21c12c60b72716427393286bb0d0d62090)
++++ b/flutter/mula-biz-frontend/lib/features/account_activation/presentation/pages/account_activation/account_activation_page.dart	(date 1698742026998)
+@@ -34,349 +34,383 @@
+   Widget build(BuildContext context) {
+     return BaseScaffold(
+       extendBodyBehindAppBar: true,
+-      bottomNavigation: SafeArea(
+-        child: Padding(
+-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+-          child: BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-            builder: (context, state) {
+-              return AppPrimaryButton(
+-                width: double.infinity,
+-                title: LocaleKeys.buttons_next.tr(),
+-                disable: !state.isValid,
+-                onPressed: () {
+-                  // context.read<AccountActivationBloc>().add(AccountActivationEvent.submit());
+-                  state.isValid ? context.pushNamed(Routes.setupPin) : null;
+-                },
+-              );
+-            },
+-          ),
+-        ),
+-      ),
++      resizeToAvoidBottomInset: true,
+       appBar: const BaseAppBar(
+         hasBack: false,
+       ),
+-      body: SingleChildScrollView(
+-        child: Padding(
+-          padding: AppDimensions.defaultPagePadding,
+-          child: Column(
+-            crossAxisAlignment: CrossAxisAlignment.start,
+-            children: [
+-              Row(
+-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+-                children: [
+-                  Flexible(
+-                    child: Text(
+-                      LocaleKeys.account_activation_activation_title.tr(),
+-                      style: AppTypo.heading3,
+-                    ),
+-                  ),
+-                  Assets.svg.profile.svg(
+-                    width: 80.sp,
+-                    height: 80.sp,
+-                  )
+-                ],
+-              ),
+-              SizedBox(
+-                height: 24.h,
+-              ),
+-              BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                builder: (context, state) {
+-                  return ValueListenableBuilder(
+-                    valueListenable: heightFirstName,
+-                    builder: (context, value, child) => AppTextFieldV2(
+-                      title: LocaleKeys.auth_first_name.tr(),
+-                      titleStyle: AppTypo.bodySmall.copyWith(
+-                        color: AppColors.grey[600],
+-                      ),
+-                      height: heightFirstName.value,
+-                      hintText: LocaleKeys
+-                          .account_activation_activation_enter_your_first_name
+-                          .tr(),
+-                      errorText: state.firstNameError,
+-                      border: heightFirstName.value != 0 ? border() : null,
+-                      onChanged: (val) {
+-                        if (val.isEmpty ||
+-                            !ValidationHelper.nameRegExp.hasMatch(val)) {
+-                          heightFirstName.value = 17;
+-                        } else {
+-                          heightFirstName.value = 0;
+-                        }
+-                        context
+-                            .read<AccountActivationBloc>()
+-                            .add(AccountActivationEvent.firstNameChanged(val));
+-                      },
+-                    ),
+-                  );
+-                },
+-              ),
+-              SizedBox(
+-                height: 16.h,
+-              ),
+-              BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                builder: (context, state) {
+-                  return ValueListenableBuilder(
+-                    valueListenable: heightLastName,
+-                    builder: (context, value, child) => AppTextFieldV2(
+-                      title: LocaleKeys.auth_last_name.tr(),
+-                      titleStyle: AppTypo.bodySmall.copyWith(
+-                        color: AppColors.grey[600],
+-                      ),
+-                      hintText: LocaleKeys
+-                          .account_activation_activation_enter_your_last_name
+-                          .tr(),
+-                      errorText: state.lastNameError,
+-                      border: heightLastName.value != 0 ? border() : null,
+-                      height: heightLastName.value,
+-                      onChanged: (val) {
+-                        if (val.isEmpty ||
+-                            !ValidationHelper.nameRegExp.hasMatch(val)) {
+-                          heightLastName.value = 17;
+-                        } else {
+-                          heightLastName.value = 0;
+-                        }
+-                        context
+-                            .read<AccountActivationBloc>()
+-                            .add(AccountActivationEvent.lastNameChanged(val));
+-                      },
+-                    ),
+-                  );
+-                },
+-              ),
+-              SizedBox(
+-                height: 16.h,
+-              ),
+-              BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                builder: (context, state) {
+-                  return ValueListenableBuilder(
+-                    valueListenable: heightEmail,
+-                    builder: (context, value, child) => AppTextFieldV2(
+-                      title: LocaleKeys.auth_email.tr(),
+-                      titleStyle: AppTypo.bodySmall.copyWith(
+-                        color: AppColors.grey[600],
+-                      ),
+-                      hintText: LocaleKeys
+-                          .account_activation_activation_enter_your_email
+-                          .tr(),
+-                      errorText: state.emailError,
+-                      border: heightEmail.value != 0 ? border() : null,
+-                      height: heightEmail.value,
+-                      onChanged: (val) {
+-                        if (val.isEmpty ||
+-                            !ValidationHelper.emailRegExp.hasMatch(val)) {
+-                          heightEmail.value = 17;
+-                        } else {
+-                          heightEmail.value = 0;
+-                        }
+-                        context
+-                            .read<AccountActivationBloc>()
+-                            .add(AccountActivationEvent.emailChanged(val));
+-                      },
+-                    ),
+-                  );
+-                },
+-              ),
+-              SizedBox(
+-                height: 16.h,
+-              ),
+-              Padding(
+-                padding: EdgeInsets.only(top: 8.h),
+-                child:
+-                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                  builder: (context, state) {
+-                    return ValueListenableBuilder(
+-                      valueListenable: heightPass,
+-                      builder: (context, value, child) => AppPasswordFieldV2(
+-                        titleStyle: AppTypo.bodySmall.copyWith(
+-                          color: AppColors.grey[600],
+-                        ),
+-                        hintText: LocaleKeys.auth_enter_your_password.tr(),
+-                        errorText: 'validators.password_error'.tr(),
+-                        border: heightPass.value != 0 ? border() : null,
+-                        height: heightPass.value,
+-                        onChanged: (val) {
+-                          if (val.isEmpty ||
+-                              !ValidationHelper.validatorPassword(val)) {
+-                            heightPass.value = 35;
+-                          } else {
+-                            heightPass.value = 0;
+-                          }
+-                          if (val == state.confirmPassword.value) {
+-                            heightRePass.value = 0;
+-                          }
+-                          context.read<AccountActivationBloc>().add(
+-                                AccountActivationEvent.passwordChanged(val),
+-                              );
+-                        },
+-                      ),
+-                    );
+-                  },
+-                ),
+-              ),
+-              ValueListenableBuilder(
+-                valueListenable: heightPass,
+-                builder: (context, value, child) => Visibility(
+-                  visible: heightPass.value == 0 ? true : false,
+-                  child: Padding(
+-                    padding: const EdgeInsets.only(left: 0),
+-                    child: Row(
+-                      crossAxisAlignment: CrossAxisAlignment.start,
+-                      children: [
+-                        Padding(
+-                          padding: EdgeInsets.only(left: 2.w,right: 2.w,top: 2.h),
+-                          child: Assets.svg.info.svg(
+-                            height: 16.h,
+-                            width: 16.w,
+-                            colorFilter: ColorFilter.mode(
+-                              AppColors.grey[500]!,
+-                              BlendMode.srcIn,
+-                            ),
+-                          ),
+-                        ),
+-                        Expanded(
+-                          child: Text(
+-                            'validators.password_error'.tr(),
+-                            style: AppTypo.bodySmall.copyWith(
+-                              color: AppColors.grey[500],
+-                              fontSize: 12
+-                            ),
+-                          ),
+-                        ),
+-                      ],
+-                    ),
+-                  ),
+-                ),
+-              ),
+-              SizedBox(
+-                height: 8.h,
+-              ),
+-              Padding(
+-                padding: EdgeInsets.only(top: 8.h),
+-                child:
+-                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                  builder: (context, state) {
+-                    return ValueListenableBuilder(
+-                      valueListenable: heightRePass,
+-                      builder: (context, value, child) => AppPasswordFieldV2(
+-                        title: LocaleKeys.auth_confirm_password.tr(),
+-                        titleStyle: AppTypo.bodySmall.copyWith(
+-                          color: AppColors.grey[600],
+-                        ),
+-                        hintText: LocaleKeys.auth_enter_your_password.tr(),
+-                        errorText: state.confirmPassword.isPure
+-                            ? null
+-                            : state.confirmPassword.isNotValid &&
+-                                    state.confirmPassword.error != null
+-                                ? ConfirmPassword.getError(
+-                                        state.confirmPassword.error!)
+-                                    .tr()
+-                                : state.isPasswordMatch
+-                                    ? null
+-                                    : 'validators.make_password_match'.tr(),
+-                        border: heightRePass.value != 0 ? border() : null,
+-                        height: heightRePass.value,
+-                        onChanged: (val) {
+-                          if (val.isEmpty || val != state.password.value) {
+-                            heightRePass.value = 17;
+-                          } else {
+-                            heightRePass.value = 0;
+-                          }
+-                          context.read<AccountActivationBloc>().add(
+-                              AccountActivationEvent.confirmPasswordChanged(
+-                                  val));
+-                        },
+-                      ),
+-                    );
+-                  },
+-                ),
+-              ),
+-              ValueListenableBuilder(
+-                valueListenable: heightRePass,
+-                builder: (context, value, child) => Visibility(
+-                  visible: heightRePass.value == 0 ? true : false,
+-                  child: Padding(
+-                    padding: const EdgeInsets.only(left: 10),
+-                    child: Text(
+-                      "Both passwords must match",
+-                      style: AppTypo.bodySmall.copyWith(
+-                        color: AppColors.grey[500],
+-                      ),
+-                    ),
+-                  ),
+-                ),
+-              ),
+-              SizedBox(
+-                height: 16.h,
+-              ),
+-              BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                builder: (context, state) {
+-                  return ValueListenableBuilder(
+-                    valueListenable: heightPhone,
+-                    builder: (context, value, child) => AppTextFieldV2(
+-                      scrollPadding: const EdgeInsets.only(bottom: 180),
+-                      keyboardType: TextInputType.phone,
+-                      title: LocaleKeys.auth_mobile_number.tr(),
+-                      titleStyle: AppTypo.bodySmall.copyWith(
+-                        color: AppColors.grey[600],
+-                      ),
+-                      hintText: LocaleKeys
+-                          .account_activation_activation_enter_your_mobile_number
+-                          .tr(),
+-                      errorText: state.mobileNumberError,
+-                      border: heightPhone.value != 0 ? border() : null,
+-                      height: heightPhone.value,
+-                      onChanged: (val) {
+-                        if(val.isEmpty){
+-                          heightPhone.value = 17;
+-                        } else if (!ValidationHelper.validatorPhoneNumber(val)) {
+-                          heightPhone.value = 35;
+-                        } else {
+-                          heightPhone.value = 0;
+-                        }
+-                        context.read<AccountActivationBloc>().add(
+-                            AccountActivationEvent.mobileNumberChanged(val));
+-                      },
+-                    ),
+-                  );
+-                },
+-              ),
+-              SizedBox(
+-                height: 16.h,
+-              ),
+-              BlocBuilder<AccountActivationBloc, AccountActivationState>(
+-                  builder: (context, state) {
+-                return ValueListenableBuilder(
+-                  valueListenable: heightCode,
+-                  builder: (context, value, child) => AppTextFieldV2(
+-                    scrollPadding: const EdgeInsets.only(bottom: 120),
+-                    title: LocaleKeys
+-                        .account_activation_activation_activation_code
+-                        .tr(),
+-                    titleStyle: AppTypo.bodySmall.copyWith(
+-                      color: AppColors.grey[600],
+-                    ),
+-                    hintText: LocaleKeys
+-                        .account_activation_activation_enter_your_activation_code
+-                        .tr(),
+-                    errorText: state.activationCodeError,
+-                    border: heightCode.value != 0 ? border() : null,
+-                    height: heightCode.value,
+-                    onChanged: (val) {
+-                      if (val.isEmpty) {
+-                        heightCode.value = 17;
+-                      } else {
+-                        heightCode.value = 0;
+-                      }
+-                      context.read<AccountActivationBloc>().add(
+-                          AccountActivationEvent.activationCodeChanged(val));
+-                    },
+-                  ),
+-                );
+-              }),
+-              SizedBox(
+-                height: 60.h,
+-              ),
+-            ],
+-          ),
++      body: Padding(
++        padding: const EdgeInsets.symmetric(horizontal: 16),
++        child: Column(
++          crossAxisAlignment: CrossAxisAlignment.start,
++          children: [
++            Expanded(
++              child: SingleChildScrollView(
++                child: Column(
++                  mainAxisAlignment: MainAxisAlignment.start,
++                  crossAxisAlignment: CrossAxisAlignment.start,
++                  children: [
++                    Row(
++                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
++                      children: [
++                        Flexible(
++                          child: Text(
++                            LocaleKeys.account_activation_activation_title.tr(),
++                            style: AppTypo.heading3,
++                          ),
++                        ),
++                        Assets.svg.profile.svg(
++                          width: 80.sp,
++                          height: 80.sp,
++                        )
++                      ],
++                    ),
++                    SizedBox(
++                      height: 24.h,
++                    ),
++                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                      builder: (context, state) {
++                        return ValueListenableBuilder(
++                          valueListenable: heightFirstName,
++                          builder: (context, value, child) => AppTextFieldV2(
++                            title: LocaleKeys.auth_first_name.tr(),
++                            titleStyle: AppTypo.bodySmall.copyWith(
++                              color: AppColors.grey[600],
++                            ),
++                            height: heightFirstName.value,
++                            hintText: LocaleKeys
++                                .account_activation_activation_enter_your_first_name
++                                .tr(),
++                            errorText: state.firstNameError,
++                            border: heightFirstName.value != 0 ? border() : null,
++                            onChanged: (val) {
++                              if (val.isEmpty ||
++                                  !ValidationHelper.nameRegExp.hasMatch(val)) {
++                                heightFirstName.value = 17;
++                              } else {
++                                heightFirstName.value = 0;
++                              }
++                              context
++                                  .read<AccountActivationBloc>()
++                                  .add(AccountActivationEvent.firstNameChanged(val));
++                            },
++                          ),
++                        );
++                      },
++                    ),
++                    SizedBox(
++                      height: 16.h,
++                    ),
++                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                      builder: (context, state) {
++                        return ValueListenableBuilder(
++                          valueListenable: heightLastName,
++                          builder: (context, value, child) => AppTextFieldV2(
++                            title: LocaleKeys.auth_last_name.tr(),
++                            titleStyle: AppTypo.bodySmall.copyWith(
++                              color: AppColors.grey[600],
++                            ),
++                            hintText: LocaleKeys
++                                .account_activation_activation_enter_your_last_name
++                                .tr(),
++                            errorText: state.lastNameError,
++                            border: heightLastName.value != 0 ? border() : null,
++                            height: heightLastName.value,
++                            onChanged: (val) {
++                              if (val.isEmpty ||
++                                  !ValidationHelper.nameRegExp.hasMatch(val)) {
++                                heightLastName.value = 17;
++                              } else {
++                                heightLastName.value = 0;
++                              }
++                              context
++                                  .read<AccountActivationBloc>()
++                                  .add(AccountActivationEvent.lastNameChanged(val));
++                            },
++                          ),
++                        );
++                      },
++                    ),
++                    SizedBox(
++                      height: 16.h,
++                    ),
++                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                      builder: (context, state) {
++                        return ValueListenableBuilder(
++                          valueListenable: heightEmail,
++                          builder: (context, value, child) => AppTextFieldV2(
++                            title: LocaleKeys.auth_email.tr(),
++                            titleStyle: AppTypo.bodySmall.copyWith(
++                              color: AppColors.grey[600],
++                            ),
++                            hintText: LocaleKeys
++                                .account_activation_activation_enter_your_email
++                                .tr(),
++                            errorText: state.emailError,
++                            border: heightEmail.value != 0 ? border() : null,
++                            height: heightEmail.value,
++                            onChanged: (val) {
++                              if (val.isEmpty ||
++                                  !ValidationHelper.emailRegExp.hasMatch(val)) {
++                                heightEmail.value = 17;
++                              } else {
++                                heightEmail.value = 0;
++                              }
++                              context
++                                  .read<AccountActivationBloc>()
++                                  .add(AccountActivationEvent.emailChanged(val));
++                            },
++                          ),
++                        );
++                      },
++                    ),
++                    SizedBox(
++                      height: 16.h,
++                    ),
++                    Padding(
++                      padding: EdgeInsets.only(top: 8.h),
++                      child:
++                      BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                        builder: (context, state) {
++                          return ValueListenableBuilder(
++                            valueListenable: heightPass,
++                            builder: (context, value, child) => AppPasswordFieldV2(
++                              titleStyle: AppTypo.bodySmall.copyWith(
++                                color: AppColors.grey[600],
++                              ),
++                              hintText: LocaleKeys.auth_enter_your_password.tr(),
++                              errorText: 'validators.password_error'.tr(),
++                              border: heightPass.value != 0 ? border() : null,
++                              height: heightPass.value,
++                              onChanged: (val) {
++                                if (val.isEmpty ||
++                                    !ValidationHelper.validatorPassword(val)) {
++                                  heightPass.value = 35;
++                                } else {
++                                  heightPass.value = 0;
++                                }
++                                if (val == state.confirmPassword.value) {
++                                  heightRePass.value = 0;
++                                }
++                                context.read<AccountActivationBloc>().add(
++                                  AccountActivationEvent.passwordChanged(val),
++                                );
++                              },
++                            ),
++                          );
++                        },
++                      ),
++                    ),
++                    ValueListenableBuilder(
++                      valueListenable: heightPass,
++                      builder: (context, value, child) => Visibility(
++                        visible: heightPass.value == 0 ? true : false,
++                        child: Padding(
++                          padding: const EdgeInsets.only(left: 0),
++                          child: Row(
++                            crossAxisAlignment: CrossAxisAlignment.start,
++                            children: [
++                              Padding(
++                                padding: EdgeInsets.only(left: 2.w,right: 2.w,top: 2.h),
++                                child: Assets.svg.info.svg(
++                                  height: 16.h,
++                                  width: 16.w,
++                                  colorFilter: ColorFilter.mode(
++                                    AppColors.grey[500]!,
++                                    BlendMode.srcIn,
++                                  ),
++                                ),
++                              ),
++                              Expanded(
++                                child: Text(
++                                  'validators.password_error'.tr(),
++                                  style: AppTypo.bodySmall.copyWith(
++                                      color: AppColors.grey[500],
++                                      fontSize: 12
++                                  ),
++                                ),
++                              ),
++                            ],
++                          ),
++                        ),
++                      ),
++                    ),
++                    SizedBox(
++                      height: 8.h,
++                    ),
++                    Padding(
++                      padding: EdgeInsets.only(top: 8.h),
++                      child:
++                      BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                        builder: (context, state) {
++                          return ValueListenableBuilder(
++                            valueListenable: heightRePass,
++                            builder: (context, value, child) => AppPasswordFieldV2(
++                              title: LocaleKeys.auth_confirm_password.tr(),
++                              titleStyle: AppTypo.bodySmall.copyWith(
++                                color: AppColors.grey[600],
++                              ),
++                              hintText: LocaleKeys.auth_enter_your_password.tr(),
++                              errorText: state.confirmPassword.isPure
++                                  ? null
++                                  : state.confirmPassword.isNotValid &&
++                                  state.confirmPassword.error != null
++                                  ? ConfirmPassword.getError(
++                                  state.confirmPassword.error!)
++                                  .tr()
++                                  : state.isPasswordMatch
++                                  ? null
++                                  : 'validators.password_do_not_match'.tr(),
++                              border: heightRePass.value != 0 ? border() : null,
++                              height: heightRePass.value,
++                              onChanged: (val) {
++                                if (val.isEmpty || val != state.password.value) {
++                                  heightRePass.value = 17;
++                                } else {
++                                  heightRePass.value = 0;
++                                }
++                                context.read<AccountActivationBloc>().add(
++                                    AccountActivationEvent.confirmPasswordChanged(
++                                        val));
++                              },
++                            ),
++                          );
++                        },
++                      ),
++                    ),
++                    ValueListenableBuilder(
++                      valueListenable: heightRePass,
++                      builder: (context, value, child) => Visibility(
++                        visible: heightRePass.value == 0 ? true : false,
++                        child: Padding(
++                          padding: const EdgeInsets.only(left: 10),
++                          child: Text(
++                            "Both passwords must match",
++                            style: AppTypo.bodySmall.copyWith(
++                              color: AppColors.grey[500],
++                            ),
++                          ),
++                        ),
++                      ),
++                    ),
++                    SizedBox(
++                      height: 16.h,
++                    ),
++                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                      builder: (context, state) {
++                        return ValueListenableBuilder(
++                          valueListenable: heightPhone,
++                          builder: (context, value, child) => AppTextFieldV2(
++                            scrollPadding: const EdgeInsets.only(bottom: 180),
++                            keyboardType: TextInputType.phone,
++                            title: LocaleKeys.auth_mobile_number.tr(),
++                            titleStyle: AppTypo.bodySmall.copyWith(
++                              color: AppColors.grey[600],
++                            ),
++                            hintText: LocaleKeys
++                                .account_activation_activation_enter_your_mobile_number
++                                .tr(),
++                            errorText: state.mobileNumberError,
++                            border: heightPhone.value != 0 ? border() : null,
++                            height: heightPhone.value,
++                            onChanged: (val) {
++                              if(val.isEmpty){
++                                heightPhone.value = 17;
++                              } else if (!ValidationHelper.validatorPhoneNumber(val)) {
++                                heightPhone.value = 35;
++                              } else {
++                                heightPhone.value = 0;
++                              }
++                              context.read<AccountActivationBloc>().add(
++                                  AccountActivationEvent.mobileNumberChanged(val));
++                            },
++                          ),
++                        );
++                      },
++                    ),
++                    SizedBox(
++                      height: 16.h,
++                    ),
++                    BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                        builder: (context, state) {
++                          return ValueListenableBuilder(
++                            valueListenable: heightCode,
++                            builder: (context, value, child) => AppTextFieldV2(
++                              scrollPadding: const EdgeInsets.only(bottom: 120),
++                              title: LocaleKeys
++                                  .account_activation_activation_activation_code
++                                  .tr(),
++                              titleStyle: AppTypo.bodySmall.copyWith(
++                                color: AppColors.grey[600],
++                              ),
++                              hintText: LocaleKeys
++                                  .account_activation_activation_enter_your_activation_code
++                                  .tr(),
++                              errorText: state.activationCodeError,
++                              border: heightCode.value != 0 ? border() : null,
++                              height: heightCode.value,
++                              onChanged: (val) {
++                                if (val.isEmpty) {
++                                  heightCode.value = 17;
++                                } else {
++                                  heightCode.value = 0;
++                                }
++                                context.read<AccountActivationBloc>().add(
++                                    AccountActivationEvent.activationCodeChanged(val));
++                              },
++                            ),
++                          );
++                        }),
++                    const SizedBox(
++                      height: 60,
++                    )
++                  ],
++                ),
++              ),
++            ),
++            Container(
++              padding: const EdgeInsets.only(bottom: 12),
++              child: BlocBuilder<AccountActivationBloc, AccountActivationState>(
++                builder: (context, state) {
++                  return Column(
++                    children: [
++                      AppPrimaryButton(
++                        width: double.infinity,
++                        title: LocaleKeys.buttons_next.tr(),
++                        disable: !state.isValid,
++                        onPressed: () {
++                          state.isValid ? context.pushNamed(Routes.setupPin) : null;
++                        },
++                      ),
++                      SizedBox(
++                        height: 16.h,
++                      ),
++                      Row(
++                        mainAxisAlignment: MainAxisAlignment.center,
++                        children: [
++                          Text(
++                            LocaleKeys
++                                .account_activation_take_a_selfie_powered_by
++                                .tr(),
++                            style: AppTypo.bodyTiny
++                                .copyWith(color: AppColors.grey[700]),
++                          ),
++                          SizedBox(
++                            width: 8.w,
++                          ),
++                          Assets.images.poweredBy.image(
++                            height: 20.h,
++                          )
++                        ],
++                      ),
++                      SizedBox(
++                        height: 8.h,
++                      ),
++                    ],
++                  );
++                },
++              ),
++            )
++          ],
+         ),
+       ),
+     );

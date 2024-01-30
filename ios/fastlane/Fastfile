@@ -1,0 +1,51 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build"
+  lane :build do
+    cocoapods(
+      podfile: "Podfile",
+      silent: true,
+      repo_update: true,
+    )
+
+    api_key_data = app_store_connect_api_key(
+      key_id: ENV['APPLE_KEY_ID'],
+      issuer_id: ENV['APPLE_ISSUER_ID'],
+      key_content: ENV['APPLE_CONTENT_KEY']
+    )
+
+    increment_build_number(
+      xcodeproj: "Runner.xcodeproj",
+      build_number: (latest_testflight_build_number(
+        app_identifier: "com.mulabiz.iosdev",
+        api_key: api_key_data,
+        team_name: "Mula teams"
+      ) + 1).to_s
+    )
+
+    gym(
+      workspace: "Runner.xcworkspace",
+      scheme: "production",
+      export_method: "app-store",
+      clean: true,
+      export_options: {
+        "provisioningProfiles": {
+          "com.mulabiz.iosdev": "com.mulabiz.iosdev AppStore"
+        }
+      },
+      silent: true
+    )
+
+    upload_to_testflight(
+      api_key: api_key_data,
+      ipa: "./Runner.ipa"
+    )
+  end
+
+  after_all do
+    delete_keychain(
+      name: "ios-build.keychain"
+    )
+  end
+end

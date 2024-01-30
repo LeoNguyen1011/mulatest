@@ -1,0 +1,78 @@
+name: CI/CD
+
+on:
+  # push:
+  #   branches:
+  #     - "master"
+  workflow_dispatch:
+
+jobs:
+  Build:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+      - run: |
+          flutter clean .
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter pub run easy_localization:generate -f keys -S assets/translations -O lib/gen
+      - name: Build
+        run: |
+          flutter build apk --flavor newDev -t lib/main.dart
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Node.js dependencies
+        run: npm install
+        working-directory: ./.github/workflows/firebase_app_check
+
+      - name: Get and Firebase latest app version
+        id: firebaseAppVersion
+        uses: ./.github/workflows/firebase_app_check
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          projectNumber: ${{secrets.PROJECT_NUMBER}}
+          serviceAccount: ${{secrets.CREDENTIAL_FILE_CONTENT}}
+
+      - name: Show apk info
+        uses: hkusu/apk-info-action@v1.0.3
+        id: currentAppVersion
+        with:
+          apk-path: "build/app/outputs/flutter-apk/app-newdev-release.apk"
+
+      - name: Check if versions are the same
+        run: |
+          current_version="${{ steps.currentAppVersion.outputs.version-name }}+${{ steps.currentAppVersion.outputs.version-code }}"
+          build_version="${{ steps.firebaseAppVersion.outputs.flutterVersionString }}"
+
+          # Extract the numeric parts of the version strings
+          current_version_number=$(echo "$current_version" | sed 's/[^0-9]*//g')
+          build_version_number=$(echo "$build_version" | sed 's/[^0-9]*//g')
+
+          # Check if current version is less than or equal to build version
+          if [ "$current_version_number" -le "$build_version_number" ]; then
+            echo "Error: Current app version must be greater than build version!"
+            exit 1
+          else
+            echo "Versions are valid. Proceeding with the build."
+          fi
+
+      - name: Setup Fastlane and deploy
+        working-directory: ./android
+        run: |
+          bundle install
+          fastlane add_plugin firebase_app_distribution
+          fastlane distribution
+

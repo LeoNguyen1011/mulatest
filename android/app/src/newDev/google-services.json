@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "75376087913",
+    "project_id": "mula-staging",
+    "storage_bucket": "mula-staging.appspot.com"
+  },
+  "client": [
+
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75376087913:android:2c661bc25f4792e67023f8",
+        "android_client_info": {
+          "package_name": "com.mulax.biz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75376087913-08m5r1dpc8bp3vt192tasl0e33la9c18.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiIbYAjsWV6kOQgIbcenkJb5ieWSVE-tw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75376087913-08m5r1dpc8bp3vt192tasl0e33la9c18.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "75376087913-6r8mtvhv825dfjsrl687rd52l6hfg8o7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mula.iosdev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

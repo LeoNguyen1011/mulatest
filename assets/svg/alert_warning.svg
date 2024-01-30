@@ -1,0 +1,27 @@
+<svg width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_18_6556)">
+        <circle cx="50.5" cy="50" r="50" fill="#FFEDF5" />
+        <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M42.2225 29.6219C41.6135 24.6961 46.0718 20.834 50.7981 20.834C55.5224 20.834 59.9678 24.6961 59.3588 29.6219L55.9234 57.3325C55.5931 59.998 53.3758 62.016 50.796 62.016C48.2184 62.016 45.9839 59.998 45.6536 57.3325L42.2225 29.6219ZM43.9316 72.3007C43.9316 68.5308 47.0282 65.4514 50.7982 65.4514C54.566 65.4514 57.6454 68.5308 57.6454 72.3007C57.6454 76.0707 54.5681 79.1673 50.7982 79.1673C47.0282 79.1673 43.9316 76.0707 43.9316 72.3007Z"
+            fill="url(#paint0_linear_18_6556)" />
+        <circle cx="50.5" cy="50" r="50" fill="#FFEDEC" />
+        <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M42.2225 29.6219C41.6135 24.6961 46.0718 20.834 50.7981 20.834C55.5224 20.834 59.9678 24.6961 59.3588 29.6219L55.9234 57.3325C55.5931 59.998 53.3758 62.016 50.796 62.016C48.2184 62.016 45.9839 59.998 45.6536 57.3325L42.2225 29.6219ZM43.9316 72.3007C43.9316 68.5308 47.0282 65.4514 50.7982 65.4514C54.566 65.4514 57.6454 68.5308 57.6454 72.3007C57.6454 76.0707 54.5681 79.1673 50.7982 79.1673C47.0282 79.1673 43.9316 76.0707 43.9316 72.3007Z"
+            fill="url(#paint1_linear_18_6556)" />
+    </g>
+    <defs>
+        <linearGradient id="paint0_linear_18_6556" x1="50.7907" y1="20.834" x2="50.9937"
+            y2="78.8978" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FF84B7" />
+            <stop offset="1" stop-color="#ED2E7E" />
+        </linearGradient>
+        <linearGradient id="paint1_linear_18_6556" x1="50.7907" y1="-173.364" x2="50.7907"
+            y2="162.323" gradientUnits="userSpaceOnUse">
+            <stop offset="0.448165" stop-color="#EB382A" />
+            <stop offset="1" stop-color="#84034C" />
+        </linearGradient>
+        <clipPath id="clip0_18_6556">
+            <rect width="100" height="100" fill="white" transform="translate(0.5)" />
+        </clipPath>
+    </defs>
+</svg>
