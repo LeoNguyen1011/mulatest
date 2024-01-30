@@ -14,12 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get Flutter version from pubspec
-        run: |
-          set -e
-          brew install yq
-          _flutterVersion=$( yq read pubspec.yaml environment.flutter )
-          echo "FLUTTER_VERSION=${_flutterVersion}" >> $GITHUB_ENV
+      - name: Get and Firebase latest app version
+        id: firebaseAppVersion
+        uses: ./.github/workflows/firebase_app_check
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          projectNumber: ${{secrets.PROJECT_NUMBER}}
+          serviceAccount: ${{secrets.CREDENTIAL_FILE_CONTENT}}
+
+      - name: Check version
+        run: build_version="${{ steps.firebaseAppVersion.outputs.flutterVersionString }}"
       # - name: Set up ruby
       #   uses: ruby/setup-ruby@v1
       #   with:
@@ -44,14 +48,6 @@ jobs:
       # - name: Install Node.js dependencies
       #   run: npm install
       #   working-directory: ./.github/workflows/firebase_app_check
-
-      # - name: Get and Firebase latest app version
-      #   id: firebaseAppVersion
-      #   uses: ./.github/workflows/firebase_app_check
-      #   with:
-      #     appId: ${{secrets.FIREBASE_APP_ID}}
-      #     projectNumber: ${{secrets.PROJECT_NUMBER}}
-      #     serviceAccount: ${{secrets.CREDENTIAL_FILE_CONTENT}}
 
       # - name: Show apk info
       #   uses: hkusu/apk-info-action@v1.0.3
