@@ -14,6 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set up ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.0
+
       - name: Get and Firebase latest app version
         id: firebaseAppVersion
         uses: ./.github/workflows/firebase_app_check
@@ -24,10 +34,7 @@ jobs:
 
       - name: Check version
         run: build_version="${{ steps.firebaseAppVersion.outputs.flutterVersionString }}"
-      # - name: Set up ruby
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     ruby-version: 3.3.0
+
       # - uses: subosito/flutter-action@v2
       #   with:
       #     channel: "stable"
@@ -39,11 +46,6 @@ jobs:
       # - name: Build
       #   run: |
       #     flutter build apk --flavor newDev -t lib/main.dart
-
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18
 
       # - name: Install Node.js dependencies
       #   run: npm install
